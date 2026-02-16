@@ -17,6 +17,7 @@ app = FastAPI(
 origins = [
     "http://localhost",
     "http://localhost:4200",  # Puerto por defecto de Angular CLI
+    "http://localhost:13834", # Puerto del frontend reportado por el usuario
     # Agrega aquí la URL de tu frontend en producción
 ]
 
