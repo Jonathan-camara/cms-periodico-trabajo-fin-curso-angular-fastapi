@@ -1,0 +1,37 @@
+<div class="form-container">
+  <h2>Crear Nuevo Artículo</h2>
+  <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
+    
+    <div class="form-field">
+      <label for="title">Título</label>
+      <input id="title" type="text" formControlName="title" placeholder="El titular de tu noticia">
+      @if (articleForm.get('title')?.invalid && (articleForm.get('title')?.dirty || articleForm.get('title')?.touched)) {
+        <div class="error-message">
+          @if (articleForm.get('title')?.hasError('required')) {
+            <span>El título es obligatorio.</span>
+          }
+          @if (articleForm.get('title')?.hasError('minlength')) {
+            <span>El título debe tener al menos 5 caracteres.</span>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="content">Contenido</label>
+      <textarea id="content" formControlName="content" rows="10" placeholder="Escribe aquí el cuerpo del artículo..."></textarea>
+      @if (articleForm.get('content')?.invalid && (articleForm.get('content')?.dirty || articleForm.get('content')?.touched)) {
+        <div class="error-message">
+          @if (articleForm.get('content')?.hasError('required')) {
+            <span>El contenido es obligatorio.</span>
+          }
+          @if (articleForm.get('content')?.hasError('minlength')) {
+            <span>El contenido debe tener al menos 20 caracteres.</span>
+          }
+        </div>
+      }
+    </div>
+
+    <button type="submit" [disabled]="articleForm.invalid">Publicar Artículo</button>
+  </form>
+</div>

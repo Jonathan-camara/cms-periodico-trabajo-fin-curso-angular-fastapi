@@ -1,0 +1,51 @@
+<div class="login-container">
+  <form (ngSubmit)="login()" #loginForm="ngForm" class="login-form">
+    <h2>Iniciar Sesión</h2>
+
+    @if (loginError) {
+      <div class="error-global">
+        Email o contraseña incorrectos. Por favor, inténtalo de nuevo.
+      </div>
+    }
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="credentials.email"
+        required
+        email
+        #emailInput="ngModel"
+      />
+      @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+        <div class="error">
+          @if (emailInput.errors?.['required']) {
+            <div>El email es requerido.</div>
+          }
+          @if (emailInput.errors?.['email']) {
+            <div>Introduce un email válido.</div>
+          }
+        </div>
+      }
+    </div>
+    <div class="form-group">
+      <label for="password">Contraseña</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="credentials.password"
+        required
+        #passwordInput="ngModel"
+      />
+      @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+        <div class="error">
+          <div>La contraseña es requerida.</div>
+        </div>
+      }
+    </div>
+    <button type="submit" [disabled]="loginForm.invalid">Entrar</button>
+  </form>
+</div>

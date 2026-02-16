@@ -1,0 +1,55 @@
+.articles-section {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.articles-section h2 {
+  font-size: 2.5em;
+  margin-bottom: 40px;
+  color: #0056b3;
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.article-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.article-card h3 {
+  font-size: 1.5em;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.article-card .article-summary {
+  font-size: 0.95em;
+  color: #666;
+  line-height: 1.4;
+  flex-grow: 1; /* Allows summary to take available space */
+}
+
+.article-card .read-more {
+  display: inline-block;
+  margin-top: 15px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.article-card .read-more:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,19 @@
+<header>
+  <nav class="navbar">
+    <a routerLink="/" class="navbar-brand">Mi Periódico Digital</a>
+    <ul class="nav-links">
+      <li><a routerLink="/">Inicio</a></li>
+      <li><a routerLink="/articulos">Artículos</a></li>
+    </ul>
+    <ul class="nav-links auth-links">
+      @if (isLoggedIn) {
+        <li><span class="username">Hola, {{ username }}</span></li>
+        <li><a routerLink="/dashboard">Dashboard</a></li>
+        <li><a (click)="logout()" class="logout-button">Logout</a></li>
+      } @else {
+        <li><a routerLink="/register">Registrarse</a></li>
+        <li><a routerLink="/login" class="login-button">Login</a></li>
+      }
+    </ul>
+  </nav>
+</header>

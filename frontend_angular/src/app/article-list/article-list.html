@@ -1,0 +1,25 @@
+<section class="articles-section">
+  <h2>Últimos Artículos</h2>
+
+  @if (isLoading) {
+    <p class="loading-message">Cargando artículos...</p>
+  } @else {
+    @if (articles.length > 0) {
+      <div class="article-grid">
+        @for (article of articles; track article.id) {
+          <div class="article-card">
+            <h3>{{ article.title }}</h3>
+            <p class="article-meta">
+              Por {{ article.author.username }} el {{ article.created_at | date:'d MMMM, y' }}
+            </p>
+            <p class="article-summary">{{ article.content.substring(0, 200) }}...</p>
+            <!-- Este enlace apuntará a la vista de detalle que crearemos más adelante -->
+            <a [routerLink]="['/articulos', article.id]" class="read-more">Leer más</a>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="empty-message">No hay artículos publicados en este momento.</p>
+    }
+  }
+</section>

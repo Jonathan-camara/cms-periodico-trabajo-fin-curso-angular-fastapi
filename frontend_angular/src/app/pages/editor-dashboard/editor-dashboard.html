@@ -1,0 +1,51 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Dashboard de Editor</h1>
+
+  <div *ngIf="isLoading" class="text-center">
+    <p>Cargando artículos...</p>
+  </div>
+
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && !error" class="overflow-x-auto">
+    <table class="min-w-full bg-white">
+      <thead class="bg-gray-800 text-white">
+        <tr>
+          <th class="w-1/3 text-left py-3 px-4 uppercase font-semibold text-sm">Título</th>
+          <th class="w-1/4 text-left py-3 px-4 uppercase font-semibold text-sm">Autor</th>
+          <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Estado</th>
+          <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-700">
+        <tr *ngFor="let article of articles; trackBy: trackById" class="border-b">
+          <td class="py-3 px-4">{{ article.title }}</td>
+          <td class="py-3 px-4">{{ article.author.username }}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-1 font-semibold leading-tight rounded-full"
+                  [ngClass]="{
+                    'bg-yellow-200 text-yellow-900': article.status === 'draft',
+                    'bg-blue-200 text-blue-900': article.status === 'review',
+                    'bg-green-200 text-green-900': article.status === 'published'
+                  }">
+              {{ article.status }}
+            </span>
+          </td>
+          <td class="py-3 px-4">
+            <!-- Acciones para Editor y Admin -->
+            <ng-container *ngIf="userRole === 'editor' || userRole === 'admin'">
+              <a [routerLink]="['/dashboard/editar-articulo', article.id]" class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</a>
+              <button *ngIf="article.status === 'draft'" (click)="updateStatus(article.id, 'review')" class="text-blue-600 hover:text-blue-900 mr-4">Enviar a Revisión</button>
+              <button *ngIf="article.status === 'review'" (click)="updateStatus(article.id, 'published')" class="text-green-600 hover:text-green-900 mr-4">Publicar</button>
+              <button *ngIf="article.status === 'review' || article.status === 'published'" (click)="updateStatus(article.id, 'draft')" class="text-yellow-600 hover:text-yellow-900">Rechazar a Borrador</button>
+              <button *ngIf="userRole === 'admin'" (click)="deleteArticle(article.id)" class="text-red-600 hover:text-red-900 ml-4">Eliminar (Admin)</button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="articles.length === 0" class="text-center mt-4">No hay artículos para mostrar.</p>
+  </div>
+</div>
