@@ -31,7 +31,7 @@ export interface Article {
   providedIn: 'root',
 })
 export class ArticleService {
-  private backendUrl = 'http://127.0.0.1:8000';
+  private backendUrl = 'http://localhost:8000';
   private http = inject(HttpClient);
   private authService = inject(Auth);
 

@@ -15,7 +15,7 @@ export interface User {
   providedIn: 'root',
 })
 export class UserService {
-  private backendUrl = 'http://127.0.0.1:8000';
+  private backendUrl = 'http://localhost:8000';
   private http = inject(HttpClient);
 
   private getPrivateHeaders(): HttpHeaders {

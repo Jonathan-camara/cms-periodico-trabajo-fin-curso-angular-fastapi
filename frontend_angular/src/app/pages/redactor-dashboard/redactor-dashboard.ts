@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Article, ArticleService } from '../../services/article';
@@ -14,6 +14,8 @@ import { Auth } from '../../auth/auth';
 export class RedactorDashboard implements OnInit {
   private articleService = inject(ArticleService);
   private authService = inject(Auth);
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   articles: Article[] = [];
   isLoading = true;
@@ -32,6 +34,7 @@ export class RedactorDashboard implements OnInit {
       next: (data) => {
         this.articles = data;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error fetching redactor dashboard articles:', err);
@@ -46,6 +49,7 @@ export class RedactorDashboard implements OnInit {
       this.articleService.deleteArticle(id).subscribe({
         next: () => {
           this.articles = this.articles.filter(article => article.id !== id);
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error(`Error deleting article ${id}:`, err);
@@ -63,6 +67,7 @@ export class RedactorDashboard implements OnInit {
         const index = this.articles.findIndex(article => article.id === id);
         if (index !== -1) {
           this.articles[index] = updatedArticle;
+          this.cdr.detectChanges();
         }
       },
       error: (err) => {

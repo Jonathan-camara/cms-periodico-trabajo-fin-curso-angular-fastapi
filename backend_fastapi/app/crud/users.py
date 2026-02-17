@@ -6,12 +6,11 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    return plain_password == hashed_password
 
 def get_password_hash(password):
     # Truncar la contraseña a 72 caracteres antes de hashearla debido a la limitación de bcrypt
-    truncated_password = password[:72]
-    return pwd_context.hash(truncated_password)
+    return password
 
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()

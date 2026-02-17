@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Article, ArticleService } from '../../services/article';
@@ -10,12 +10,15 @@ import { Auth } from '../../auth/auth';
   imports: [CommonModule, RouterLink],
   templateUrl: './editor-dashboard.html',
   styleUrl: './editor-dashboard.css',
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class EditorDashboard implements OnInit {
   private articleService = inject(ArticleService);
   private authService = inject(Auth);
 
-  articles: Article[] = [];
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  public articles: Article[] = [];
   isLoading = true;
   userRole: string | null = null;
   error: string | null = null;
@@ -32,6 +35,7 @@ export class EditorDashboard implements OnInit {
       next: (data) => {
         this.articles = data;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error fetching editor dashboard articles:', err);
@@ -46,6 +50,7 @@ export class EditorDashboard implements OnInit {
       this.articleService.deleteArticle(id).subscribe({
         next: () => {
           this.articles = this.articles.filter(article => article.id !== id);
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error(`Error deleting article ${id}:`, err);
@@ -61,6 +66,7 @@ export class EditorDashboard implements OnInit {
         const index = this.articles.findIndex(article => article.id === id);
         if (index !== -1) {
           this.articles[index] = updatedArticle;
+          this.cdr.detectChanges();
         }
       },
       error: (err) => {

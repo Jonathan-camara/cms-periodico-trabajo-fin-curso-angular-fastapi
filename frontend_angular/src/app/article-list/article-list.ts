@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Article, ArticleService } from '../services/article';
 import { RouterLink } from '@angular/router';
@@ -13,6 +13,8 @@ import { RouterLink } from '@angular/router';
 export class ArticleList implements OnInit {
   private articleService = inject(ArticleService);
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
   articles: Article[] = [];
   isLoading = true;
 
@@ -22,6 +24,7 @@ export class ArticleList implements OnInit {
       next: (data) => {
         this.articles = data;
         this.isLoading = false;
+        this.cdr.detectChanges();
         console.log('Artículos cargados:', this.articles);
       },
       error: (err) => {
