@@ -1,0 +1,101 @@
+<div class="article-reader">
+  <!-- Estado de Carga -->
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando la noticia...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error && !isLoading) {
+    <div class="error-container">
+      <h2>Oops! Algo ha fallado</h2>
+      <p>{{ error }}</p>
+      <a routerLink="/articulos" class="btn-back">Volver a la portada</a>
+    </div>
+  }
+
+  <!-- Contenido del Artículo -->
+  @if (article && !isLoading) {
+    <article class="article-container">
+      <header class="editorial-header">
+        <div class="breadcrumb">
+          <a routerLink="/articulos">Portada</a> 
+          <span class="sep">/</span> 
+          <span class="category">{{ article.category }}</span>
+        </div>
+        
+        <h1 class="headline">{{ article.title }}</h1>
+        
+        <div class="byline">
+          <div class="author-circle">{{ article.author.username.charAt(0).toUpperCase() }}</div>
+          <div class="byline-content">
+            <span class="author-name">Por <strong>{{ article.author.username }}</strong></span>
+            <span class="publish-date">{{ article.created_at | date: 'fullDate' }}</span>
+          </div>
+        </div>
+      </header>
+
+      @if (getImageUrl()) {
+        <figure class="featured-image">
+          <img [src]="getImageUrl()" [alt]="article.title">
+          <figcaption>Imagen: {{ article.image_filename }}</figcaption>
+        </figure>
+      }
+
+      <div class="reading-layout">
+        <div class="article-content" [innerHTML]="article.content">
+        </div>
+        
+        <aside class="sidebar-info">
+          <div class="sidebar-card">
+            <h4>Más sobre {{ article.category }}</h4>
+            <p>Descubre las últimas noticias relacionadas en nuestra sección especial de periodismo.</p>
+            <a routerLink="/articulos" class="sidebar-link">Explorar sección</a>
+          </div>
+        </aside>
+      </div>
+
+      <footer class="editorial-footer">
+        <hr>
+        
+        <!-- Sección de Comentarios -->
+        <section class="comments-section">
+          <h3>Comentarios ({{ comments.length }})</h3>
+          
+          @if (isLoggedIn) {
+            <div class="comment-form">
+              <textarea placeholder="Escribe tu opinión sobre esta noticia..." #commentText></textarea>
+              <button (click)="postComment(commentText.value); commentText.value = ''">Publicar Comentario</button>
+            </div>
+          } @else {
+            <div class="login-prompt">
+              <p><a routerLink="/login">Inicia sesión</a> para participar en la conversación.</p>
+            </div>
+          }
+
+          <div class="comments-list">
+            @for (comment of comments; track comment.id) {
+              <div class="comment-item">
+                <div class="comment-header">
+                  <strong>{{ comment.user.username }}</strong>
+                  <span>{{ comment.created_at | date:'short' }}</span>
+                </div>
+                <p class="comment-content">{{ comment.content }}</p>
+              </div>
+            } @empty {
+              <p class="no-comments">Sé el primero en comentar esta noticia.</p>
+            }
+          </div>
+        </section>
+
+        <div class="footer-actions">
+          <a routerLink="/articulos" class="btn-back-home">
+            ← Volver a la Portada
+          </a>
+        </div>
+      </footer>
+    </article>
+  }
+</div>

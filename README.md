@@ -1,109 +1,114 @@
-# CMS_Periodico: Sistema de Gestión de Contenidos para Periódicos
+# CMS Periodico de Upgrade v2.0 - Arquitectura Modular
 
-Este proyecto es un Sistema de Gestión de Contenidos (CMS) diseñado para periódicos, implementado como una aplicación web full-stack. Consiste en un backend robusto construido con FastAPI (Python) y un frontend dinámico desarrollado con Angular (TypeScript).
+## ⚡ COMANDOS RÁPIDOS PARA ARRANCAR
 
-## Características Principales
+### 🐍 Backend (Desde carpeta `backend_fastapi`)
+**Activar Entorno Virtual:**
+*   En **Git Bash (MINGW64)**: `source venv/Scripts/activate`
+*   En **PowerShell**: `.\venv\Scripts\activate`
 
-*   **Gestión de Artículos:** Creación, lectura, actualización y eliminación de artículos.
-*   **Roles de Usuario:**
-    *   **Redactor:** Crea y edita sus propios artículos (en estado borrador), puede enviarlos a revisión y eliminar sus propios borradores.
-    *   **Editor:** Revisa artículos, los aprueba para publicación, los rechaza a borrador, y puede editar cualquier artículo.
-    *   **Administrador:** Control total sobre todos los artículos, usuarios y configuraciones del sistema.
-*   **Autenticación y Autorización:** Seguridad basada en JWT para proteger las rutas de la API.
-*   **Base de Datos:** Utiliza MySQL para la persistencia de datos, gestionada a través de SQLAlchemy.
+**Ejecutar Servidor:**
+`uvicorn app.main:app --reload`
 
-## Estructura del Proyecto
+### 🅰️ Frontend (Desde carpeta `frontend_angular`)
+`ng serve`
 
-El proyecto está dividido en dos directorios principales:
+---
 
-*   `backend_fastapi/`: Contiene la aplicación FastAPI (API REST).
-*   `frontend_angular/`: Contiene la aplicación Angular.
+## 🚀 Tecnologías Principales
 
-## Configuración del Entorno
+*   **Backend:** FastAPI (Python 3.10+), SQLAlchemy (ORM), Pydantic (Validación), JWT (Seguridad).
+*   **Frontend:** Angular 17+ (TypeScript), Arquitectura basada en Features, Signals para estado reactivo, Lazy Loading.
+*   **Base de Datos:** MySQL.
 
-Asegúrate de tener instalados los siguientes requisitos:
+---
 
-*   **Python 3.8+**
-*   **Node.js y npm** (o yarn)
-*   **MySQL Server**
-*   **Angular CLI** (`npm install -g @angular/cli`)
+## 🏗️ Arquitectura Modular
 
-### Backend (FastAPI)
+El proyecto ha sido refactorizado para garantizar robustez y facilidad de mantenimiento:
 
-1.  **Navega al directorio del backend:**
-    ```bash
-    cd backend_fastapi
-    ```
-2.  **Crea y activa un entorno virtual:**
-    ```bash
-    python -m venv venv
-    # En Windows
-    ./venv/Scripts/activate
-    # En Linux/macOS
-    source venv/bin/activate
-    ```
-3.  **Instala las dependencias de Python:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-4.  **Configura las variables de entorno:**
-    Crea un archivo `.env` en el directorio `backend_fastapi/` con el siguiente contenido (reemplaza con tus credenciales):
-    ```
-    DATABASE_URL="mysql+mysqlconnector://user:password@host:port/cms_db"
-    SECRET_KEY="your_super_secret_key"
-    ```
-    *   `DATABASE_URL`: Cadena de conexión a tu base de datos MySQL.
-    *   `SECRET_KEY`: Clave secreta para la generación de tokens JWT.
-5.  **Aplica las migraciones de la base de datos:**
-    *   Asegúrate de que tu servidor MySQL esté corriendo.
-    *   Ejecuta: `alembic upgrade head`
-        *   Si es la primera vez, puede que necesites ejecutar `alembic revision --autogenerate -m "Initial migration"` y luego `alembic upgrade head`.
+### Backend (app/)
+*   **core/:** Configuración global, seguridad (JWT/hashing) y excepciones.
+*   **db/:** Sesión de base de datos y modelos base.
+*   **api/v1/:** Endpoints versionados y organizados por dominio.
+*   **services/:** Capa de lógica de negocio (desacoplada de los controladores HTTP).
+*   **schemas/:** Modelos de Pydantic organizados por funcionalidad.
 
-### Frontend (Angular)
+### Frontend (src/app/)
+*   **core/:** Servicios globales (auth, interceptores, guards).
+*   **features/:** Módulos independientes por funcionalidad (articles, auth, dashboard, home).
+*   **layout/:** Componentes de interfaz global (header, footer).
+*   **shared/:** Componentes y pipes reutilizables.
 
-1.  **Navega al directorio del frontend:**
-    ```bash
-    cd frontend_angular
-    ```
-2.  **Instala las dependencias de Node.js:**
-    ```bash
-    npm install
-    # o
-    yarn install
-    ```
+---
 
-## Cómo Arrancar la Aplicación
+## 🛠️ Instalación y Configuración
 
-### 1. Arrancar el Backend (FastAPI)
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/Jonathan-camara/cms-periodico-trabajo-fin-curso-angular-fastapi.git
+cd cms-periodico-trabajo-fin-curso-angular-fastapi
+```
 
-Desde el directorio `backend_fastapi/` (con el entorno virtual activado):
+### 2. Configuración del Backend (FastAPI)
+Navega a la carpeta del backend:
+```bash
+cd backend_fastapi
+```
 
+**Crear y activar entorno virtual:**
+```powershell
+python -m venv venv
+# En Windows:
+.\venv\Scripts\activate
+# En Linux/macOS:
+source venv/bin/activate
+```
+
+**Instalar dependencias:**
+```bash
+pip install -r requirements.txt
+```
+
+**Variables de Entorno:**
+Crea un archivo `.env` basado en `.env.example`:
+```bash
+DATABASE_URL="mysql+mysqlconnector://USUARIO:CONTRASEÑA@127.0.0.1:3306/NOMBRE_DB"
+SECRET_KEY="tu_clave_secreta_aqui"
+```
+
+**Arrancar Backend:**
 ```bash
 uvicorn app.main:app --reload
 ```
+La API estará disponible en `http://localhost:8000`. Documentación interactiva en `/docs`.
 
-Esto iniciará el servidor FastAPI, generalmente accesible en `http://127.0.0.1:8000`.
+---
 
-### 2. Arrancar el Frontend (Angular)
+### 3. Configuración del Frontend (Angular)
+Navega a la carpeta del frontend:
+```bash
+cd ../frontend_angular
+```
 
-Desde el directorio `frontend_angular/`:
+**Instalar dependencias:**
+```bash
+npm install
+```
 
+**Arrancar Frontend:**
 ```bash
 ng serve
 ```
+La aplicación estará disponible en `http://localhost:4200`.
 
-Esto iniciará el servidor de desarrollo de Angular, generalmente accesible en `http://localhost:4200/`.
+---
 
-¡Ahora puedes acceder a la aplicación en tu navegador!
+## 👥 Roles y Permisos
 
-## Autenticación y Roles
+1.  **Redactor:** Crea borradores, edita sus propios artículos (si no están publicados) y solicita revisión.
+2.  **Editor:** Revisa, aprueba o rechaza cualquier artículo. Gestión de contenidos.
+3.  **Administrador:** Control total sobre usuarios (roles) y contenidos de la plataforma.
 
-*   Para probar diferentes roles, puedes registrar usuarios con el endpoint `/auth/register` (desde la UI del frontend o directamente desde la documentación de Swagger del backend en `http://127.0.0.1:8000/docs`).
-*   Los roles se definen en el registro (`"redactor"` por defecto). Un administrador puede crearse manualmente o asignarse el rol `admin` directamente en la base de datos para realizar pruebas.
-
-## Próximos Pasos (Pendientes)
-
-*   Implementar dashboards específicos para Editor y Administrador con todas sus herramientas (gestión de usuarios, base de datos).
-*   Desarrollo de un sistema de suscripciones.
-*   Mejoras en la interfaz de usuario y experiencia de usuario.
-*   Pruebas exhaustivas y preparación para el despliegue.
+## 📄 Licencia
+Este proyecto es de uso educativo para el Bootcamp de Upgrade Hub.

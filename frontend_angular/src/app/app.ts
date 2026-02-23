@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Header } from './header/header'; // Importa el HeaderComponent
-import { Footer } from './footer/footer'; // Importa el FooterComponent
+import { Header } from './layout/header/header'; // Importa el HeaderComponent
+import { Footer } from './layout/footer/footer'; // Importa el FooterComponent
 
 @Component({
   selector: 'app-root',
@@ -11,5 +11,5 @@ import { Footer } from './footer/footer'; // Importa el FooterComponent
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('frontend_angular');
+  protected readonly title = signal('El Periódico de Upgrade');
 }

@@ -1,0 +1,83 @@
+Opción recomendada (la más profesional)
+
+👩‍💻 1️⃣ Backend & API (FastAPI)
+
+Responsable de:
+
+Autenticación (login, registro, roles)
+
+Endpoints CRUD de artículos
+
+Gestión de estados (Borrador → Revisión → Publicado)
+
+Asignación redactor → editor
+
+Lógica de negocio (bloqueo de edición en revisión)
+
+Sistema de suscripción
+
+Validaciones
+
+Este rol es CLAVE.
+
+ Es quien define cómo funciona el sistema por dentro.
+
+🗄 2️⃣ Base de Datos & Modelo
+
+Responsable de:
+
+Diseño del modelo entidad-relación
+
+Creación de tablas (MySQL)
+
+Relaciones y claves foráneas
+
+Normalización
+
+Índices
+
+Scripts de inicialización
+
+Consultas optimizadas
+
+Puede colaborar mucho con backend, pero alguien debe ser el “arquitecto de datos”.
+
+Esta persona define la estructura sobre la que todo descansa.
+
+🎨 3️⃣ Frontend Angular (parte pública)
+
+Responsable de:
+
+Landing page
+
+Visualización de artículos publicados
+
+Orden por importancia
+
+Filtro por secciones
+
+Vista de detalle de artículo
+
+Diseño visual y UX
+
+Este perfil se centra en lo que ve el usuario lector.
+
+🧑‍💼 4️⃣ Frontend Angular (parte privada / dashboard)
+
+Responsable de:
+
+Panel del redactor
+
+Editor de artículos
+
+Cambio de estado
+
+Asignación a editor
+
+Panel del editor
+
+Vista de artículos en revisión
+
+Gestión de publicación
+
+Este perfil se centra en la parte interna tipo “mini backoffice”.

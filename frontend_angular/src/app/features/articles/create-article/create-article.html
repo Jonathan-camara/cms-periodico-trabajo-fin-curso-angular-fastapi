@@ -1,0 +1,53 @@
+<div class="form-container">
+  <h2>Crear Nuevo Artículo</h2>
+  <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
+    
+    <div class="form-field">
+      <label for="title">Título</label>
+      <input id="title" type="text" formControlName="title" placeholder="El titular de tu noticia">
+      @if (articleForm.get('title')?.invalid && (articleForm.get('title')?.dirty || articleForm.get('title')?.touched)) {
+        <div class="error-message">
+          @if (articleForm.get('title')?.hasError('required')) {
+            <span>El título es obligatorio.</span>
+          }
+          @if (articleForm.get('title')?.hasError('minlength')) {
+            <span>El título debe tener al menos 5 caracteres.</span>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="category">Categoría</label>
+      <select id="category" formControlName="category">
+        <option value="Nacional">Nacional</option>
+        <option value="Internacional">Internacional</option>
+        <option value="Economía">Economía</option>
+        <option value="Deportes">Deportes</option>
+        <option value="Cultura">Cultura</option>
+        <option value="Tecnología">Tecnología</option>
+        <option value="Opinión">Opinión</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="content">Contenido de la Noticia</label>
+      <div class="editor-wrapper">
+        <div #editor style="height: 300px;"></div>
+      </div>
+      @if (articleForm.get('content')?.invalid && (articleForm.get('content')?.dirty || articleForm.get('content')?.touched)) {
+        <div class="error-message">
+          <span>El contenido es obligatorio para publicar la noticia.</span>
+        </div>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="file">Adjuntar Archivo Local (Imagen o Documento)</label>
+      <input id="file" type="file" (change)="onFileSelected($event)" class="file-input">
+      <p class="file-info">El archivo se guardará de forma segura en la base de datos.</p>
+    </div>
+
+    <button type="submit" [disabled]="articleForm.invalid">Publicar Artículo</button>
+  </form>
+</div>

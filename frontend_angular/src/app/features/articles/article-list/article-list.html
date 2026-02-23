@@ -1,0 +1,73 @@
+<section class="news-container">
+  <!-- Barra de Categorías -->
+  <nav class="category-nav">
+    @for (cat of categories; track cat) {
+      <button 
+        [class.active]="selectedCategory === cat" 
+        (click)="filterByCategory(cat)">
+        {{ cat }}
+      </button>
+    }
+  </nav>
+
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando la actualidad...</p>
+    </div>
+  }
+
+  @if (!isLoading && filteredArticles.length > 0) {
+    <!-- Noticia Destacada (Solo en 'Todas' y si hay artículos) -->
+    @if (selectedCategory === 'Todas') {
+      <div class="hero-article" [routerLink]="['/articulos', filteredArticles[0].id]">
+        <div class="hero-image">
+          @if (getImageUrl(filteredArticles[0])) {
+            <img [src]="getImageUrl(filteredArticles[0])" alt="Imagen noticia">
+          } @else {
+            <div class="placeholder-img">🗞️ Actualidad</div>
+          }
+        </div>
+        <div class="hero-content">
+          <span class="category-badge">{{ filteredArticles[0].category }}</span>
+          <h2>{{ filteredArticles[0].title }}</h2>
+          <p>{{ filteredArticles[0].content | slice:0:300 }}...</p>
+          <div class="hero-footer">
+            <span>Por <strong>{{ filteredArticles[0].author.username }}</strong></span>
+            <span>{{ filteredArticles[0].created_at | date:'dd MMM, yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Rejilla de Noticias -->
+    <div class="news-grid" [class.no-hero]="selectedCategory !== 'Todas'">
+      @for (article of (selectedCategory === 'Todas' ? filteredArticles.slice(1) : filteredArticles); track article.id) {
+        <article class="news-card" [routerLink]="['/articulos', article.id]">
+          <div class="card-image">
+            @if (getImageUrl(article)) {
+              <img [src]="getImageUrl(article)" alt="Imagen noticia">
+            } @else {
+              <div class="placeholder-img-small">🗞️</div>
+            }
+          </div>
+          <div class="card-body">
+            <span class="category-badge-small">{{ article.category }}</span>
+            <h3>{{ article.title }}</h3>
+            <p>{{ article.content | slice:0:120 }}...</p>
+            <div class="card-footer">
+              <strong>{{ article.author.username }}</strong>
+              <span>{{ article.created_at | date:'shortDate' }}</span>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  @if (!isLoading && filteredArticles.length === 0) {
+    <div class="empty-state">
+      <p>No hay noticias publicadas en "{{ selectedCategory }}" todavía.</p>
+    </div>
+  }
+</section>

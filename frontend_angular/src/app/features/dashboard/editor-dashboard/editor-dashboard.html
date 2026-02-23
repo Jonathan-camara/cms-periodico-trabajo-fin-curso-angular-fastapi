@@ -1,0 +1,82 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Panel Editorial y de Gestión</h1>
+    
+    <div class="activity-status">
+      Total de artículos: <strong>{{ articles.length }}</strong>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-box">
+      <p>Cargando todos los artículos...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-box">
+      {{ error }}
+    </div>
+  }
+
+  @if (!isLoading && !error) {
+    <div class="table-wrapper">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th style="width: 35%">Título</th>
+            <th style="width: 15%">Autor</th>
+            <th style="width: 15%">Estado</th>
+            <th style="width: 35%">Acciones Editoriales</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (article of articles; track article.id) {
+            <tr>
+              <td class="font-bold">{{ article.title }}</td>
+              <td>{{ article.author.username }}</td>
+              <td>
+                <span class="status-badge"
+                      [ngClass]="{
+                        'status-draft': article.status === 'draft',
+                        'status-review': article.status === 'review',
+                        'status-published': article.status === 'published'
+                      }">
+                  {{ article.status === 'draft' ? 'Borrador' : (article.status === 'review' ? 'En Revisión' : 'Publicado') }}
+                </span>
+              </td>
+              <td>
+                <div class="action-links">
+                  @if (userRole === 'editor' || userRole === 'admin') {
+                    <a [routerLink]="['/dashboard/editar-articulo', article.id]" class="action-btn btn-edit">Editar</a>
+                    
+                    @if (article.status === 'draft') {
+                      <button (click)="updateStatus(article.id, 'review')" class="action-btn btn-review">Enviar a Revisión</button>
+                    }
+                    
+                    @if (article.status === 'review') {
+                      <button (click)="updateStatus(article.id, 'published')" class="action-btn btn-publish">Publicar</button>
+                    }
+                    
+                    @if (article.status === 'review' || article.status === 'published') {
+                      <button (click)="updateStatus(article.id, 'draft')" class="action-btn btn-reject">Rechazar</button>
+                    }
+                    
+                    @if (userRole === 'admin') {
+                      <button (click)="deleteArticle(article.id)" class="action-btn btn-delete">Borrar (Admin)</button>
+                    }
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (articles.length === 0) {
+        <div class="empty-box">
+          <p>No hay artículos pendientes de revisión en este momento.</p>
+        </div>
+      }
+    </div>
+  }
+</div>

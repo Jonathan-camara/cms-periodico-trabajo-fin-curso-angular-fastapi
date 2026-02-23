@@ -14,3 +14,7 @@ class User(Base):
 
     authored_articles = relationship("Article", back_populates="author", foreign_keys="[Article.author_id]")
     edited_articles = relationship("Article", back_populates="editor", foreign_keys="[Article.editor_id]")
+    subscription = relationship("Subscription", back_populates="user", uselist=False) # Relación 1:1
+    comments = relationship("Comment", back_populates="user")
+
+

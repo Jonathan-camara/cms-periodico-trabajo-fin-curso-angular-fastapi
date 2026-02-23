@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form, Response
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -17,12 +17,38 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=schemas.Article, status_code=status.HTTP_201_CREATED)
-def create_article(
-    article: schemas.ArticleCreate,
+async def create_article(
+    title: str = Form(...),
+    content: str = Form(...),
+    category: str = Form("Nacional"),
+    status_art: str = Form("draft"),
+    file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: schemas.User = Depends(get_current_redactor_user)
 ):
-    return crud_articles.create_article(db=db, article=article, author_id=current_user.id)
+    image_data = None
+    image_filename = None
+    
+    if file:
+        image_data = await file.read()
+        image_filename = file.filename
+        
+    article_data = schemas.ArticleCreate(title=title, content=content, status=status_art, category=category)
+    return crud_articles.create_article(
+        db=db, 
+        article=article_data, 
+        author_id=current_user.id,
+        image_data=image_data,
+        image_filename=image_filename
+    )
+
+@router.get("/{article_id}/image")
+def get_article_image(article_id: int, db: Session = Depends(get_db)):
+    db_article = crud_articles.get_article(db, article_id=article_id)
+    if not db_article or not db_article.image_data:
+        raise HTTPException(status_code=404, detail="Imagen no encontrada")
+    
+    return Response(content=db_article.image_data, media_type="application/octet-stream")
 
 @router.get("/", response_model=List[schemas.Article])
 def read_articles(
@@ -44,11 +70,8 @@ def read_articles(
 
     # Si un usuario está logueado y pide "sus" artículos
     if current_user and mine:
-        if current_user.role == "redactor":
-            return crud_articles.get_articles_by_author(db, author_id=current_user.id, skip=skip, limit=limit)
-        if current_user.role == "editor":
-            # Un editor puede querer ver los artículos que tiene asignados
-            return crud_articles.get_articles_by_editor(db, editor_id=current_user.id, skip=skip, limit=limit)
+        # Cualquier usuario (redactor, editor, admin) debe poder ver SUS artículos propios
+        return crud_articles.get_articles_by_author(db, author_id=current_user.id, skip=skip, limit=limit)
 
     # Si es un editor o admin y no está pidiendo "sus" artículos, ve todos los artículos (sin filtrar por estado)
     if current_user and current_user.role in ["editor", "admin"]:
@@ -76,11 +99,15 @@ def read_article(
     return db_article
 
 @router.put("/{article_id}", response_model=schemas.Article)
-def update_article(
+async def update_article(
     article_id: int,
-    article_update: schemas.ArticleUpdate,
+    title: str = Form(...),
+    content: str = Form(...),
+    category: str = Form(...),
+    status_art: Optional[str] = Form(None),
+    file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
-    current_user: schemas.User = Depends(get_current_active_user) # Cambiado a get_current_active_user
+    current_user: schemas.User = Depends(get_current_active_user)
 ):
     db_article = crud_articles.get_article(db, article_id=article_id)
     if db_article is None:
@@ -88,19 +115,21 @@ def update_article(
 
     # Lógica de permisos detallada
     if current_user.role == "redactor":
-        # Un redactor solo puede actualizar sus propios artículos y solo si están en estado "draft"
-        if db_article.author_id != current_user.id or db_article.status != ArticleStatus.draft:
-            raise HTTPException(status_code=403, detail="No tienes permisos para actualizar este artículo o su estado no permite la edición.")
+        # Un redactor solo puede actualizar sus propios artículos y solo si NO están publicados
+        if db_article.author_id != current_user.id or db_article.status == ArticleStatus.published:
+            raise HTTPException(status_code=403, detail="No tienes permisos para actualizar este artículo o ya ha sido publicado.")
         
         # Un redactor no puede cambiar el estado a través de este endpoint
-        article_update.status = None # Ignorar cualquier intento de cambiar el estado
+        status_art = None # Ignorar cualquier intento de cambiar el estado
 
     elif current_user.role == "editor":
-        # Un editor puede actualizar sus artículos, los que le fueron asignados, o los que están en revisión
-        if not (db_article.author_id == current_user.id or \
+        # Un editor puede actualizar cualquier artículo que esté en revisión (para corregirlo antes de publicar)
+        # o cualquier artículo que le pertenezca o le haya sido asignado.
+        if not (db_article.status == ArticleStatus.review or \
+                db_article.author_id == current_user.id or \
                 db_article.editor_id == current_user.id or \
-                db_article.status == ArticleStatus.review):
-            raise HTTPException(status_code=403, detail="No tienes permisos para actualizar este artículo.")
+                db_article.status == ArticleStatus.published):
+            raise HTTPException(status_code=403, detail="No tienes permisos para editar este artículo en su estado actual.")
 
     elif current_user.role == "admin":
         # Un administrador puede actualizar cualquier artículo sin restricciones adicionales de rol
@@ -109,8 +138,28 @@ def update_article(
         # Cualquier otro rol no tiene permisos para actualizar artículos
         raise HTTPException(status_code=403, detail="No tienes permisos para actualizar artículos.")
 
-    # Realizar la actualización
-    return crud_articles.update_article(db=db, article_id=article_id, article_update=article_update)
+    # Preparar datos de imagen si se ha subido un archivo
+    image_data = None
+    image_filename = None
+    if file:
+        image_data = await file.read()
+        image_filename = file.filename
+
+    article_update = schemas.ArticleUpdate(
+        title=title, 
+        content=content, 
+        category=category, 
+        status=status_art
+    )
+
+    # Realizar la actualización incluyendo la imagen
+    return crud_articles.update_article(
+        db=db, 
+        article_id=article_id, 
+        article_update=article_update,
+        image_data=image_data,
+        image_filename=image_filename
+    )
 
 @router.put("/{article_id}/status", response_model=schemas.Article)
 def update_article_status_endpoint(
@@ -124,7 +173,10 @@ def update_article_status_endpoint(
         raise HTTPException(status_code=404, detail="Artículo no encontrado")
     
     updated_article = crud_articles.update_article_status(
-        db=db, article_id=article_id, status=status_update.status
+        db=db, 
+        article_id=article_id, 
+        status=status_update.status,
+        feedback=status_update.feedback
     )
     return updated_article
 

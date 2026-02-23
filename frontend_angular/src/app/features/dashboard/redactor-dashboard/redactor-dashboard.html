@@ -1,0 +1,79 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Panel de Redactor</h1>
+    
+    <div class="activity-status">
+      Has escrito: <strong>{{ articles.length }}</strong> artículos
+    </div>
+
+    <a routerLink="/dashboard/crear-articulo" class="btn-create">
+      <i class="fas fa-plus"></i> Crear Nuevo Artículo
+    </a>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-box">
+      <p>Cargando tus artículos...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-box">
+      {{ error }}
+    </div>
+  }
+
+  @if (!isLoading && !error) {
+    <div class="table-wrapper">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th style="width: 40%">Título del Artículo</th>
+            <th style="width: 20%">Autor</th>
+            <th style="width: 20%">Estado Actual</th>
+            <th style="width: 20%">Gestión</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (article of articles; track article.id) {
+            <tr>
+              <td class="font-bold">{{ article.title }}</td>
+              <td>{{ article.author.username }}</td>
+              <td>
+                <span class="status-badge"
+                      [ngClass]="{
+                        'status-draft': article.status === 'draft',
+                        'status-review': article.status === 'review',
+                        'status-published': article.status === 'published'
+                      }">
+                  {{ article.status === 'draft' ? 'Borrador' : (article.status === 'review' ? 'En Revisión' : 'Publicado') }}
+                </span>
+                
+                @if ((article.status === 'draft' || article.status === 'review') && article.editor_feedback) {
+                  <div class="feedback-alert" title="{{ article.editor_feedback }}">
+                    ⚠️ Feedback: {{ article.editor_feedback | slice:0:30 }}...
+                  </div>
+                }
+              </td>
+              <td>
+                <div class="action-links">
+                  @if (userRole === 'redactor' && article.author_id === currentUserId && (article.status === 'draft' || article.status === 'review')) {
+                    <a [routerLink]="['/dashboard/editar-articulo', article.id]" class="action-btn btn-edit">Editar</a>
+                    <button (click)="deleteArticle(article.id)" class="action-btn btn-delete">Eliminar</button>
+                  } @else {
+                    <span class="text-locked">No editable</span>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (articles.length === 0) {
+        <div class="empty-box">
+          <p>Aún no has escrito ningún artículo. ¡Anímate a crear el primero!</p>
+        </div>
+      }
+    </div>
+  }
+</div>

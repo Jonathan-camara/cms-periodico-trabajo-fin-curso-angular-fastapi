@@ -1,0 +1,34 @@
+<footer>
+  <div class="footer-container">
+    <div class="footer-section">
+      <span class="footer-brand">Periódico de Upgrade</span>
+      <p>Elevando la información periodística con rigor, transparencia y visión de futuro en el mundo digital.</p>
+    </div>
+    <div class="footer-section">
+      <h3>Secciones</h3>
+      <ul>
+        <li><a routerLink="/">Inicio</a></li>
+        <li><a routerLink="/articulos">Últimas Noticias</a></li>
+        <li><a routerLink="/articulos" [queryParams]="{cat: 'Opinión'}">Opinión</a></li>
+        <li><a routerLink="/articulos" [queryParams]="{cat: 'Tecnología'}">Tecnología</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Redacción</h3>
+      <ul>
+        <li><a routerLink="/login">Acceso Periodistas</a></li>
+        <li><a routerLink="/register">Unirse al Equipo</a></li>
+        <li><a routerLink="/dashboard">Panel de Control</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Contacto</h3>
+      <p>info@periodico-upgrade.com</p>
+      <p>+34 900 000 000</p>
+      <p>Madrid, España</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; {{ currentYear }} Periódico de Upgrade. Todos los derechos reservados.</p>
+  </div>
+</footer>

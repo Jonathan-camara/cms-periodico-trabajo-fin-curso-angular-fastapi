@@ -1,0 +1,71 @@
+<div class="editor-container">
+  <div class="editor-header">
+    <h1>Redacción y Edición</h1>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-box">
+      <p>Cargando el editor...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-box">
+      <p>Error: {{ error }}</p>
+    </div>
+  }
+
+  @if (!isLoading) {
+    <form [formGroup]="articleForm" (ngSubmit)="onSubmit()" class="editor-form">
+      <div class="form-group">
+        <label for="title">Titular de la Noticia</label>
+        <input type="text" id="title" formControlName="title" placeholder="Escribe un titular impactante...">
+        @if (articleForm.get('title')?.invalid && articleForm.get('title')?.touched) {
+          <div class="error-text">
+            El título es obligatorio para publicar la noticia.
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="category">Categoría</label>
+        <select id="category" formControlName="category" class="custom-select">
+          <option value="Nacional">Nacional</option>
+          <option value="Internacional">Internacional</option>
+          <option value="Economía">Economía</option>
+          <option value="Deportes">Deportes</option>
+          <option value="Cultura">Cultura</option>
+          <option value="Tecnología">Tecnología</option>
+          <option value="Opinión">Opinión</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="image">Imagen de la Noticia (opcional)</label>
+        <input type="file" id="image" (change)="onFileSelected($event)" accept="image/*" class="file-input">
+        <small class="help-text">Deja este campo vacío si no quieres cambiar la imagen actual.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="content">Cuerpo de la Noticia</label>
+        <div class="editor-wrapper" style="background: white;">
+          <div #editor style="height: 400px;"></div>
+        </div>
+        @if (articleForm.get('content')?.invalid && articleForm.get('content')?.touched) {
+          <div class="error-text">
+            No puedes publicar una noticia sin contenido.
+          </div>
+        }
+      </div>
+
+      <div class="editor-actions">
+        <button type="submit" [disabled]="articleForm.invalid || isLoading" class="btn-save">
+          Guardar Cambios y Continuar
+        </button>
+        <a routerLink="/dashboard" class="btn-cancel">
+          Cancelar y Volver al Panel
+        </a>
+      </div>
+    </form>
+  }
+</div>

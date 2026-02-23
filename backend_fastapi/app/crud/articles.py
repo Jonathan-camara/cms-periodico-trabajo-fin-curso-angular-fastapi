@@ -11,34 +11,43 @@ def get_articles(db: Session, skip: int = 0, limit: int = 100, status: Optional[
     query = db.query(models.Article)
     if status:
         query = query.filter(models.Article.status == status)
-    return query.offset(skip).limit(limit).all()
+    return query.order_by(models.Article.created_at.desc()).offset(skip).limit(limit).all()
 
 # Nueva función: Obtener artículos por autor
 def get_articles_by_author(db: Session, author_id: int, skip: int = 0, limit: int = 100):
-    return db.query(models.Article).filter(models.Article.author_id == author_id).offset(skip).limit(limit).all()
+    return db.query(models.Article).filter(models.Article.author_id == author_id).order_by(models.Article.created_at.desc()).offset(skip).limit(limit).all()
 
 # Nueva función: Obtener artículos por editor asignado
 def get_articles_by_editor(db: Session, editor_id: int, skip: int = 0, limit: int = 100):
-    return db.query(models.Article).filter(models.Article.editor_id == editor_id).offset(skip).limit(limit).all()
+    return db.query(models.Article).filter(models.Article.editor_id == editor_id).order_by(models.Article.created_at.desc()).offset(skip).limit(limit).all()
 
-def create_article(db: Session, article: ArticleCreate, author_id: int):
+def create_article(db: Session, article: ArticleCreate, author_id: int, image_data: bytes = None, image_filename: str = None):
     db_article = models.Article(
         title=article.title,
         content=article.content,
         status=article.status,
-        author_id=author_id
+        category=article.category,
+        author_id=author_id,
+        image_data=image_data,
+        image_filename=image_filename
     )
     db.add(db_article)
     db.commit()
     db.refresh(db_article)
     return db_article
 
-def update_article(db: Session, article_id: int, article_update: ArticleUpdate):
+def update_article(db: Session, article_id: int, article_update: ArticleUpdate, image_data: bytes = None, image_filename: str = None):
     db_article = db.query(models.Article).filter(models.Article.id == article_id).first()
     if db_article:
         for var, value in vars(article_update).items():
             if value is not None:
                 setattr(db_article, var, value)
+        
+        # Actualizar imagen solo si se proporciona una nueva
+        if image_data:
+            db_article.image_data = image_data
+            db_article.image_filename = image_filename
+
         db.commit()
         db.refresh(db_article)
     return db_article
@@ -60,10 +69,12 @@ def assign_editor_to_article(db: Session, article_id: int, editor_id: int):
     return db_article
 
 # Nueva función para cambiar solo el estado de un artículo
-def update_article_status(db: Session, article_id: int, status: str):
+def update_article_status(db: Session, article_id: int, status: str, feedback: str = None):
     db_article = db.query(models.Article).filter(models.Article.id == article_id).first()
     if db_article:
         db_article.status = status
+        if feedback is not None:
+            db_article.editor_feedback = feedback
         db.commit()
         db.refresh(db_article)
     return db_article

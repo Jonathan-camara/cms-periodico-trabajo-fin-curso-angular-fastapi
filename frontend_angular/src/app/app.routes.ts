@@ -1,27 +1,55 @@
 import { Routes } from '@angular/router';
-import { LandingPage } from './landing-page/landing-page';
-import { Login } from './auth/login/login';
-import { Register } from './auth/register/register';
-import { Dashboard } from './pages/dashboard/dashboard';
-import { authGuard } from './auth/auth-guard';
-import { CreateArticle } from './components/create-article/create-article';
-import { ArticleList } from './article-list/article-list';
-import { ArticleDetail } from './pages/article-detail/article-detail';
-import { EditArticle } from './pages/edit-article/edit-article';
-import { RedactorDashboard } from './pages/redactor-dashboard/redactor-dashboard';
-import { EditorDashboard } from './pages/editor-dashboard/editor-dashboard';
-import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-    { path: '', component: LandingPage },
-    { path: 'articulos', component: ArticleList },
-    { path: 'articulos/:id', component: ArticleDetail },
-    { path: 'login', component: Login },
-    { path: 'register', component: Register },
-    { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
-    { path: 'dashboard/crear-articulo', component: CreateArticle, canActivate: [authGuard] },
-    { path: 'dashboard/editar-articulo/:id', component: EditArticle, canActivate: [authGuard] },
-    { path: 'dashboard/redactor-dashboard', component: RedactorDashboard, canActivate: [authGuard] },
-    { path: 'dashboard/editor-dashboard', component: EditorDashboard, canActivate: [authGuard] },
-    { path: 'dashboard/admin-dashboard', component: AdminDashboard, canActivate: [authGuard] }
+    { 
+        path: '', 
+        loadComponent: () => import('./features/home/landing-page/landing-page').then(m => m.LandingPage) 
+    },
+    { 
+        path: 'articulos', 
+        loadComponent: () => import('./features/articles/article-list/article-list').then(m => m.ArticleList) 
+    },
+    { 
+        path: 'articulos/:id', 
+        loadComponent: () => import('./features/articles/article-detail/article-detail').then(m => m.ArticleDetail) 
+    },
+    { 
+        path: 'login', 
+        loadComponent: () => import('./features/auth/login/login').then(m => m.Login) 
+    },
+    { 
+        path: 'register', 
+        loadComponent: () => import('./features/auth/register/register').then(m => m.Register) 
+    },
+    { 
+        path: 'dashboard', 
+        canActivate: [authGuard],
+        children: [
+            { 
+                path: '', 
+                loadComponent: () => import('./features/dashboard/dashboard/dashboard').then(m => m.Dashboard) 
+            },
+            { 
+                path: 'crear-articulo', 
+                loadComponent: () => import('./features/articles/create-article/create-article').then(m => m.CreateArticle) 
+            },
+            { 
+                path: 'editar-articulo/:id', 
+                loadComponent: () => import('./features/articles/edit-article/edit-article').then(m => m.EditArticle) 
+            },
+            { 
+                path: 'redactor-dashboard', 
+                loadComponent: () => import('./features/dashboard/redactor-dashboard/redactor-dashboard').then(m => m.RedactorDashboard) 
+            },
+            { 
+                path: 'editor-dashboard', 
+                loadComponent: () => import('./features/dashboard/editor-dashboard/editor-dashboard').then(m => m.EditorDashboard) 
+            },
+            { 
+                path: 'admin-dashboard', 
+                loadComponent: () => import('./features/dashboard/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard) 
+            }
+        ]
+    }
 ];

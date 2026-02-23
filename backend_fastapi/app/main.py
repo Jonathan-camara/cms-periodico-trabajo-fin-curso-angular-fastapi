@@ -1,39 +1,35 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
-from .routers import auth, articles, users
-from .models.database import engine, Base
-
-# Crear las tablas en la base de datos si no existen (solo para desarrollo, Alembic es preferible para producción)
-# Base.metadata.create_all(bind=engine)
+from .api.v1.api import api_router
+from .core.config import settings
 
 app = FastAPI(
-    title="CMS de Periódico - API",
-    description="API RESTful para la gestión de un CMS de periódico, incluyendo usuarios, artículos y autenticación.",
-    version="1.0.0",
+    title=settings.PROJECT_NAME,
+    version=settings.PROJECT_VERSION,
+    description="API modular y robusta para el CMS Periodico de Upgrade",
 )
 
-# Configuración de CORS para permitir peticiones desde el frontend de Angular
-origins = [
-    "http://localhost",
-    "http://localhost:4200",  # Puerto por defecto de Angular CLI
-    "http://localhost:13834", # Puerto del frontend reportado por el usuario
-    # Agrega aquí la URL de tu frontend en producción
-]
-
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"], # In production, set this to specific origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Incluir los routers
-app.include_router(auth.router)
-app.include_router(articles.router)
-app.include_router(users.router)
+# Global Exception Handler
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Error interno del servidor: {str(exc)}"},
+    )
+
+# Include API Router
+app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/")
 async def root():
-    return {"message": "¡Bienvenido a la API del CMS de Periódico!"}
+    return {"message": "¡Bienvenido a la API del Periódico de Upgrade!"}

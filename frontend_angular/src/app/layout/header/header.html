@@ -1,0 +1,46 @@
+<header class="main-header">
+  <!-- Barra superior: Fecha y Usuario -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="current-date">
+        {{ today | date:'fullDate' }}
+      </div>
+      <nav class="user-nav">
+        @if (!isLoggedIn()) {
+          <a routerLink="/login" class="nav-link">Iniciar Sesión</a>
+          <a routerLink="/register" class="nav-link highlight">Suscribirse</a>
+        } @else {
+          <span class="welcome-text">Bienvenido, <strong>{{ username }}</strong></span>
+          <a routerLink="/dashboard" class="nav-link">Mi Panel</a>
+          <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+        }
+      </nav>
+    </div>
+  </div>
+
+  <!-- Identidad del Periódico -->
+  <div class="branding-bar">
+    <div class="container">
+      <h1 class="newspaper-logo" routerLink="/">EL PERIÓDICO DE UPGRADE</h1>
+      <p class="tagline">La verdad importa. Periodismo independiente desde 2026.</p>
+    </div>
+  </div>
+
+  <!-- Navegación y Búsqueda -->
+  <nav class="navigation-bar">
+    <div class="container">
+      <ul class="main-nav">
+        <li><a routerLink="/" class="btn-home-nav">🏠 Inicio</a></li>
+        <li><a routerLink="/articulos">Últimas Noticias</a></li>
+        <li><a routerLink="/articulos" [queryParams]="{cat: 'Nacional'}">Nacional</a></li>
+        <li><a routerLink="/articulos" [queryParams]="{cat: 'Economía'}">Economía</a></li>
+        <li><a routerLink="/articulos" [queryParams]="{cat: 'Tecnología'}">Tecnología</a></li>
+      </ul>
+      
+      <div class="search-box">
+        <input type="text" placeholder="Buscar noticias..." #searchInput (keyup.enter)="search(searchInput.value)">
+        <button (click)="search(searchInput.value)"><i class="fas fa-search"></i>🔍</button>
+      </div>
+    </div>
+  </nav>
+</header>

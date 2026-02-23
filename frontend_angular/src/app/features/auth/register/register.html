@@ -1,0 +1,85 @@
+<div class="register-container">
+  <form (ngSubmit)="register()" #registerForm="ngForm" class="register-form">
+    <h2>Crear una Cuenta</h2>
+
+    @if (registrationError) {
+      <div class="error-global" style="background-color: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 700; border: 1px solid #fecaca; text-align: center;">
+        ⚠️ {{ registrationError }}
+      </div>
+    }
+
+    <div class="form-group">
+      <label for="username">Nombre de Usuario</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        [(ngModel)]="userData.username"
+        required
+        #usernameInput="ngModel"
+      />
+      @if (usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)) {
+        <div class="error">
+          <div>El nombre de usuario es requerido.</div>
+        </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="userData.email"
+        required
+        email
+        #emailInput="ngModel"
+      />
+      @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+        <div class="error">
+          @if (emailInput.errors?.['required']) {
+            <div>El email es requerido.</div>
+          }
+          @if (emailInput.errors?.['email']) {
+            <div>Introduce un email válido.</div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="password">Contraseña</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="userData.password"
+        required
+        minlength="8"
+        #passwordInput="ngModel"
+      />
+       @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+        <div class="error">
+           @if (passwordInput.errors?.['required']) {
+            <div>La contraseña es requerida.</div>
+          }
+           @if (passwordInput.errors?.['minlength']) {
+            <div>La contraseña debe tener al menos 8 caracteres.</div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="role">Tipo de Cuenta</label>
+      <select id="role" name="role" [(ngModel)]="userData.role" required>
+        <option value="lector">Lector (Para comentar y leer)</option>
+        <option value="redactor">Redactor (Escribe noticias)</option>
+        <option value="editor">Editor (Revisa y publica)</option>
+      </select>
+    </div>
+
+    <button type="submit" [disabled]="registerForm.invalid">Registrarse</button>
+  </form>
+</div>
